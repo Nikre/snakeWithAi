@@ -39,3 +39,6 @@ class Snake():
 
     def get_head_position(self):
         return self.body[-1]
+
+    def is_self_eaten(self):
+        return self.body.count(self.get_head_position()) >= 2

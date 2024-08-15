@@ -57,7 +57,9 @@ while running:
     check_eaten_food(snake, food)
     draw_snake(snake)
     draw_food(food)
-    running = not check_collision(snake, WINDOW_WIDTH, WINDOW_HEIGHT)
+
+    if check_collision(snake, WINDOW_WIDTH, WINDOW_HEIGHT) or snake.is_self_eaten():
+        running = False
 
     pygame.display.flip()
     clock.tick(FPS)
