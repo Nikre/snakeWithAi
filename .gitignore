@@ -1,0 +1,30 @@
+# Ignora tutte le cartelle __pycache__
+__pycache__/
+
+# Ignora tutti i file .pyc
+*.pyc
+
+# Ignora tutti i file .pyo
+*.pyo
+
+# Ignora tutti i file .pyd
+*.pyd
+
+# Ignora la cartella di ambiente virtuale (se ne usi una)
+venv/
+env/
+.venv/
+
+# Ignora file di IDE specifici (opzionale, ma spesso utile)
+.vscode/
+.idea/
+
+# Ignora file di log
+*.log
+
+# Ignora file temporanei
+*.tmp
+
+# Ignora file di sistema
+.DS_Store
+Thumbs.db
