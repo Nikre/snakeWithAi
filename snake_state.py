@@ -17,7 +17,7 @@ class InitialState(SnakeState):
         self.snake = snake
 
     def move(self, increment):
-        pass
+        return None
 
     def handle_input(self, event):
         if event[pygame.K_UP]:  # UP
@@ -33,10 +33,9 @@ class InitialState(SnakeState):
 class GoRight(SnakeState):
     def __init__ (self, snake):
         self.snake = snake
-        # self.snake._direction = (1, 0) # direzione iniziale dx
 
     def move(self, increment):
-        self.snake.position.x += increment
+        return (self.snake.get_head_position()[0] + increment, self.snake.get_head_position()[1])
 
     def handle_input(self, event):
         if event[pygame.K_UP]: # UP
@@ -50,7 +49,7 @@ class GoLeft(SnakeState):
         self.snake = snake
 
     def move(self, increment):
-        self.snake.position.x -= increment
+        return (self.snake.get_head_position()[0] - increment, self.snake.get_head_position()[1])
 
     def handle_input(self, event):
         if event[pygame.K_UP]:  # UP
@@ -63,7 +62,10 @@ class GoUp(SnakeState):
         self.snake = snake
 
     def move(self, increment):
-        self.snake.position.y -= increment
+        return (
+            self.snake.get_head_position()[0],
+            self.snake.get_head_position()[1] - increment,
+        )
 
     def handle_input(self, event):
         if event[pygame.K_RIGHT]:  # RIGHT
@@ -77,7 +79,10 @@ class GoDown(SnakeState):
         self.snake = snake
 
     def move(self, increment):
-        self.snake.position.y += increment
+        return (self.snake.get_head_position()[0], 
+                self.snake.get_head_position()[1] + increment
+                )
+
 
     def handle_input(self, event):
         if event[pygame.K_RIGHT]:  # RIGHT
