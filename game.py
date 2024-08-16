@@ -4,63 +4,71 @@ from snake import *
 from constants import *
 
 
-def score():
-    # TODO: screare una funzione per il calcolo dello score
-    pass
+class SnakeGame:
 
-def draw_food(food):
-    pygame.draw.circle(screen, "red", food.get_food_position(), CIRCLE_RADIUS)
+    def __init__(self) -> None:
+        # pygame setup
+        pygame.init()
+        self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.clock = pygame.time.Clock()
+        self.set_new_game()
 
-def draw_snake(snake):
-    for section in snake.body:
-        pygame.draw.circle(screen, "green", section, CIRCLE_RADIUS)
+    def set_new_game(self):
+        self.game_over = False
+        self.reward = 0
+        self.snake = Snake()
+        self.food = Food()
+        self.frame_iteration = 0
 
-def check_eaten_food(snake, food):
-    if snake.get_head_position() == food.get_food_position():
-        snake.eat(CIRCLE_RADIUS * 2)
-        food.food_eaten()
+    def play(self):
+        pygame.display.set_caption(f"Snake Game - Score: {self.score()}")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.game_over = False
+            elif event.type == pygame.KEYDOWN:
+                self.snake.change_direction(pygame.key.get_pressed())
+        # fill the screen with a color to wipe away anything from last frame
+        self.screen.fill(color=(53, 53, 53))
 
-def check_collision(snake, width, height):
-    return (
-        True
-        if snake.get_head_position()[0] >= width
-        or snake.get_head_position()[0] <= 0
-        or snake.get_head_position()[1] >= height
-        or snake.get_head_position()[1] <= 0
-        else False
-    )
+        self.snake.move(CIRCLE_RADIUS*2)
+        self.check_eaten_food()
+        self.draw_snake()
+        self.draw_food()
 
+        if self.check_collision(WINDOW_WIDTH, WINDOW_HEIGHT) or self.snake.is_self_eaten():
+            self.game_over = True
+            self.reward = -10
 
-# pygame setup
-pygame.init()
-screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-clock = pygame.time.Clock()
-running = True
-snake = Snake()
-food = Food()
+            # NOTE: not runnig vuol dire se c'è il game over
+            return self.reward, self.game_over, self.score()
 
-while running:
-    # poll for events
-    # pygame.QUIT event means the user clicked X to close your window
-    pygame.display.set_caption(f"Snake Game - Score: {len(snake.body)}")
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            snake.change_direction(pygame.key.get_pressed())
-    # fill the screen with a color to wipe away anything from last frame
-    screen.fill(color=(53, 53, 53))
+        pygame.display.flip()
+        self.clock.tick(FPS)
 
-    keys = pygame.key.get_pressed()
-    snake.move(CIRCLE_RADIUS*2)
-    check_eaten_food(snake, food)
-    draw_snake(snake)
-    draw_food(food)
+        return self.reward, self.game_over, self.score()
 
-    if check_collision(snake, WINDOW_WIDTH, WINDOW_HEIGHT) or snake.is_self_eaten():
-        running = False
+    def score(self):
+        return len(self.snake.body)
 
-    pygame.display.flip()
-    clock.tick(FPS)
+    def draw_food(self):
+        pygame.draw.circle(self.screen, "red", self.food.get_food_position(), CIRCLE_RADIUS)
 
-pygame.quit()
+    def draw_snake(self):
+        for section in self.snake.body:
+            pygame.draw.circle(self.screen, "green", section, CIRCLE_RADIUS)
+
+    def check_eaten_food(self):
+        if self.snake.get_head_position() == self.food.get_food_position():
+            self.snake.eat(CIRCLE_RADIUS * 2)
+            self.food.food_eaten()
+            self.reward = 10
+
+    def check_collision(self, width, height):
+        return (
+            True
+            if self.snake.get_head_position()[0] >= width
+            or self.snake.get_head_position()[0] <= 0
+            or self.snake.get_head_position()[1] >= height
+            or self.snake.get_head_position()[1] <= 0
+            else False
+        )
