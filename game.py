@@ -36,7 +36,6 @@ pygame.init()
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 clock = pygame.time.Clock()
 running = True
-dt = 0
 snake = Snake()
 food = Food()
 
