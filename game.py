@@ -20,15 +20,15 @@ class SnakeGame:
         self.food = Food()
         self.frame_iteration = 0
 
-    def play(self):
+    def play(self, action):
         pygame.display.set_caption(f"Snake Game - Score: {self.score()}")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.game_over = False
-            elif event.type == pygame.KEYDOWN:
-                self.snake.change_direction(pygame.key.get_pressed())
+        
         # fill the screen with a color to wipe away anything from last frame
         self.screen.fill(color=(53, 53, 53))
+        self.snake.change_direction(action)
 
         self.snake.move(CIRCLE_RADIUS*2)
         self.check_eaten_food()

@@ -34,8 +34,8 @@ class Snake():
         movement = self._state.move(increment)
         self.body.append(movement)
 
-    def change_direction(self, event):
-        self._state.handle_input(event)
+    def change_direction(self, action):
+        self._state.handle_input(action)
 
     def get_head_position(self):
         return self.body[-1]

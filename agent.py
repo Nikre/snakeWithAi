@@ -1,10 +1,102 @@
+import numpy as np
 from game import *
+from constants import *
 
+
+moves = np.array(
+    [
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_LEFT_TURN,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_LEFT_TURN,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_LEFT_TURN,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_RIGHT_TURN,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_RIGHT_TURN,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_RIGHT_TURN,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_RIGHT_TURN,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+        ACTION_STRAIGHT,
+    ]
+)
 
 if __name__ == '__main__':
     game = SnakeGame()
+    idx = 0
 
     while not game.game_over:
-        game.play() 
+        game.play(moves[idx]) 
+        idx += 1
     
     print(f"Your score: {game.score()}")
