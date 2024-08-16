@@ -37,6 +37,9 @@ class Snake():
     def change_direction(self, action):
         self._state.handle_input(action)
 
+    def get_direction(self):
+        return self._state._direction
+
     def get_head_position(self):
         return self.body[-1]
 

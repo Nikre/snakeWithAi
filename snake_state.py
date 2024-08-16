@@ -28,7 +28,7 @@ class SnakeState(ABC):
 class InitialState(SnakeState):
     def __init__(self, snake):
         self.snake = snake
-        self._direction = None
+        self._direction = DIRECTION_NONE
 
     def move(self, increment):
         return None
@@ -55,7 +55,7 @@ class InitialState(SnakeState):
 class GoRight(SnakeState):
     def __init__(self, snake):
         self.snake = snake
-        self._direction = [0, 1, 0, 0]
+        self._direction = DIRECTION_RIGHT
 
     def move(self, increment):
         return (
@@ -66,7 +66,7 @@ class GoRight(SnakeState):
     def handle_input(self, action):
         if np.array_equal(action, ACTION_STRAIGHT):
             pass
-            #self.snake._state = GoRight(self.snake)
+            # self.snake._state = GoRight(self.snake)
         elif np.array_equal(action, ACTION_RIGHT_TURN):
             self.snake._state = GoDown(self.snake)
         elif np.array_equal(action, ACTION_LEFT_TURN):  # EXPLICIT
@@ -81,7 +81,7 @@ class GoRight(SnakeState):
 class GoLeft(SnakeState):
     def __init__(self, snake):
         self.snake = snake
-        self._direction = [1, 0, 0, 0]
+        self._direction = DIRECTION_LEFT
 
     def move(self, increment):
         return (
@@ -107,7 +107,7 @@ class GoLeft(SnakeState):
 class GoUp(SnakeState):
     def __init__(self, snake):
         self.snake = snake
-        self._direction = [0, 0, 1, 0]
+        self._direction = DIRECTION_UP
 
     def move(self, increment):
         return (
@@ -133,7 +133,7 @@ class GoUp(SnakeState):
 class GoDown(SnakeState):
     def __init__(self, snake):
         self.snake = snake
-        self._direction = [0, 0, 0, 1]
+        self._direction = DIRECTION_DOWN
 
     def move(self, increment):
         return (

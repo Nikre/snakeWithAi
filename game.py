@@ -21,11 +21,13 @@ class SnakeGame:
         self.frame_iteration = 0
 
     def play(self, action):
+        self.frame_iteration += 1 # TODO
+        self.reward = 0
         pygame.display.set_caption(f"Snake Game - Score: {self.score()}")
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.game_over = False
-        
+                self.game_over = True
+
         # fill the screen with a color to wipe away anything from last frame
         self.screen.fill(color=(53, 53, 53))
         self.snake.change_direction(action)
@@ -72,3 +74,63 @@ class SnakeGame:
             or self.snake.get_head_position()[1] <= 0
             else False
         )
+
+    def _check_borders(self, window_width, window_height):
+        x, y = self.snake.get_head_position()
+        border_front = False
+        border_right = False
+        border_left = False
+        if np.array_equal(self.snake.get_direction(), DIRECTION_RIGHT):
+            border_front = x >= window_width
+            border_right = y + CELL_SIZE >= window_height
+            border_left = y - CELL_SIZE <= 0
+        elif np.array_equal(self.snake.get_direction(), DIRECTION_LEFT):
+            border_front = x <= 0
+            border_right = y - CELL_SIZE <= 0
+            border_left = y + CELL_SIZE >= window_height
+        elif np.array_equal(self.snake.get_direction(), DIRECTION_UP): 
+            border_front = y <= 0
+            border_right = x + CELL_SIZE >= window_width
+            border_left = x - CELL_SIZE <= 0
+        elif np.array_equal(self.snake.get_direction(), DIRECTION_DOWN):
+            border_front = y >= window_height
+            border_right = x - CELL_SIZE <= 0
+            border_left = x + CELL_SIZE >= window_width
+        return border_front, border_right, border_left
+
+    def _get_food_location(self):
+        head = self.snake.get_head_position()
+        food = self.food.get_food_position()
+
+        r = food[0] > head[0]
+        l = food[0] < head[0]
+        u = food[1] < head[1]
+        d = food[1] > head[1]
+
+        return (r, l, u, d)
+
+    def get_state(self):
+        border_front, border_right, border_left = self._check_borders(
+            WINDOW_WIDTH, WINDOW_HEIGHT
+        )
+
+        # Directions
+        dir_l, dir_r, dir_u, dir_d = self.snake.get_direction()
+
+        # Food
+        food_r, food_l, food_u, food_d = self._get_food_location()
+
+        state = (
+            border_front,
+            border_right,
+            border_left,
+            dir_l,
+            dir_r,
+            dir_u,
+            dir_d,
+            food_r,
+            food_l,
+            food_u,
+            food_d,
+        )
+        return np.array(state, dtype=int)
