@@ -3,138 +3,48 @@ import pygame
 import torch
 from game import *
 from constants import *
-
-moves = np.array(
-    [
-        ACTION_LEFT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_RIGHT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_RIGHT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_LEFT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_RIGHT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_RIGHT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_RIGHT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_RIGHT_TURN,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-        ACTION_STRAIGHT,
-    ]
-)
+from collections import deque
+from model import Linear_QNet, QTrainer
 
 
-def get_action_from_keys():
-    keys = pygame.key.get_pressed()
+class Agent:
 
-    if keys[pygame.K_UP]:
-        return [1, 0, 0]
-    elif keys[pygame.K_LEFT]:
-        return [0, 0, 1]
-    elif keys[pygame.K_RIGHT]:
-        return [0, 1, 0]
-    else:
-        pass
+    def __init__(self):
+        self.n_games = 0
+        self.epsilon = 0  # randomness
+        self.gamma = 0.9  # discount rate
+        self.memory = deque(maxlen=MAX_MEMORY)  # popleft()
+        self.model = Linear_QNet(11, 256, 3)
+        self.trainer = QTrainer(self.model, lr=LR, gamma=self.gamma)
 
-if __name__ == '__main__':
-    game = SnakeGame()
-    idx = 0
+    def remember(self, state, action, reward, next_state, done):
+        self.memory.append(
+            (state, action, reward, next_state, done)
+        )  # popleft if MAX_MEMORY is reached
 
-    while True:
-        action = get_action_from_keys()
-        # reward, game_over, score = game.play(moves[idx])
-        reward, game_over, score = game.play(action) 
-        print(f"Reward: {reward}") 
+    def train_long_memory(self):
+        if len(self.memory) > BATCH_SIZE:
+            mini_sample = random.sample(self.memory, BATCH_SIZE)  # list of tuples
+        else:
+            mini_sample = self.memory
 
-        idx += 1
-        print(game.get_state())
-        if game_over: break
+        states, actions, rewards, next_states, dones = zip(*mini_sample)
+        self.trainer.train_step(states, actions, rewards, next_states, dones)
 
-    print(f"Your score: {score}") 
+    def train_short_memory(self, state, action, reward, next_state, done):
+        self.trainer.train_step(state, action, reward, next_state, done)
+
+    def get_action(self, state):
+        # random moves: tradeoff exploration / exploitation
+        self.epsilon = 80 - self.n_games
+        move_action = [0, 0, 0]
+        if random.randint(0, 200) < self.epsilon:
+            move = random.randint(0, 2)
+            move_action[move] = 1
+        else:
+            state0 = torch.tensor(state, dtype=torch.float)
+            prediction = self.model(state0)
+            move = torch.argmax(prediction).item()
+            move_action[move] = 1
+
+        return move_action
