@@ -24,6 +24,20 @@ class Linear_QNet(nn.Module):
         file_name = os.path.join(model_folder_path, file_name)
         torch.save(self.state_dict(), file_name)
 
+    @classmethod
+    def load(cls, input_size, hidden_size, output_size, file_name="model.pth"):
+        model = cls(input_size, hidden_size, output_size)
+        model_folder_path = "./model"
+        file_name = os.path.join(model_folder_path, file_name)
+        
+        if os.path.exists(file_name):
+            model.load_state_dict(torch.load(file_name))
+            model.eval()
+            print(f"Loaded model from {file_name}")
+        else:
+            print(f"No model found at {file_name}. Starting with a new model.")
+
+        return model
 
 class QTrainer:
     def __init__(self, model, lr, gamma):
